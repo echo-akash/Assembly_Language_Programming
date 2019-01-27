@@ -1,0 +1,59 @@
+.model small
+.stack 100h
+.data
+msg db 0dh,0ah,'type a binary num:$'
+msg1 db 0dh,0ah,'SUM:$'
+var db '?'
+.code
+main proc 
+	mov ax,@data
+	mov ds,ax
+	mov var,0
+input:	
+	lea dx,msg
+	mov ah,9
+	int 21h
+	xor bx,bx
+	mov ah,1
+	int 21h
+while_:
+	cmp al,0dh
+	je end_
+	sub al,48
+	shl bx,1
+	or bl,al
+	int 21h
+	jmp while_
+end_:
+	inc var
+	cmp var,2
+	je exit_
+	mov cx,bx
+	jmp input
+exit_:
+	
+	add cx,bx
+	lea dx,msg1
+	mov ah,9
+	int 21h
+	mov bx,cx
+output:	
+	mov cx,16
+TOP:
+	rol bx,1
+	jc top1
+	mov dl,'0'
+	mov ah,2
+	int 21h
+	jmp level
+top1:
+	mov dl,'1'
+	mov ah,2
+	int 21h
+level:
+	loop TOP
+	
+	mov ah,4ch
+	int 21h
+	main endp
+	end main	
